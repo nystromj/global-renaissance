@@ -1,1 +1,0 @@
-Put the contents of this directory into the RenaissanceNLP/data folder. It will access an internal folder called "data," which contains a JSON data file with the pathnames of the raw content.
