@@ -46,9 +46,8 @@ body {
     margin: -5 0;
     position: absolute;
     top: 50px;
-    width: 1000px;
+    width: 600px;
     }
-
 
     .foreground {
     fill: #adfffc;
@@ -225,7 +224,7 @@ background-color: red;
 			document.getElementById('renMap').appendChild(loc);
 			$(loc).css( { 'top': value[0] + "px", 'right': value[1] + "px"});
 			//$(loc).text(key);
-			console.log("Added, right: " + value[1] + "px");
+			//console.log("Added, right: " + value[1] + "px");
 			var self = loc;
 			addListener(self);
 		});
@@ -265,41 +264,43 @@ background-color: red;
 	<div id="renMapWrapper">
 		<div id="renMap"></div>
 	</div>
-    <div id="map"></div><script src="http://d3js.org/d3.v3.js" type="text/javascript">
+    <div id="map"></div>
+
+<script src="http://d3js.org/d3.v3.min.js" type="text/javascript">
 </script><script src="js/d3.geo.projection.min.js" type="text/javascript">
 </script><script src="js/topojson.min.js" type="text/javascript">
 </script><script src="js/d3.geo.zoom.js" type="text/javascript">
 </script><script type="text/javascript">
 
 
-    var degrees = 180 / Math.PI,
-    width = 1700,
+    var width = 600,
     height = 600;
 
     var loader = d3.dispatch("world");
 
-
+    console.log(d3)
     /* set up projections for this globe */
     var ortho = orthographicProjection(width, height)
           .scale(245)
-          .translate([width / 2, height * .56]);
+          .translate([width / 2, height / 2 /*  * .56 */]);
           
     var eisen = d3.geo.eisenlohr()
           .precision(.1)
           .clipExtent([[1, 1], [width - 1, height - 1]])
           .translate([width / 2, height / 2])
           .scale(75)
-          .rotate([0, -30]);
+          .rotate([0, 0/* -30 */]);
 
-    /* instantiate SVG */          
-    svg = d3.selectAll("#map, #eisenlohr")
-    .append("svg")
+    /* instantiate SVG */ 
+    console.log(d3)         
+    svg = d3.selectAll("#map")
+      .append("svg")
         .attr("width", width)
         .attr("height", height);
-
+        
     /* load countries data from file */    
     d3.json("maps_110.json", function(error, world) {
-
+      svg = d3.select("svg")
     /* add country polygons and make them interactive */
     svg.selectAll(".countries")
         .data(topojson.feature(world,world.objects.count).features)
@@ -315,25 +316,79 @@ background-color: red;
     svg.insert("path", ".foreground")
       .datum(topojson.mesh(world, world.objects.count))
       .attr("class", "mesh"); 
+        
+    var rotate = function(rotate) { rotate[0] = d3.event.x; return {angle: rotate[0], rotate:rotate};}
+    var update = function(rotate) { return rotate[0] = d3.event.x; }
+    var origin = function(rotate) { return {x: rotate[0]}; }
+    
+    projections = []
+    
+    var projection = ortho
+      , path = d3.geo.path().projection(projection);
       
-    /* create projections to map countries onto sphere and add zooming functions */   
+      
+      var svg = d3.select("svg").call(drawMap, path, true);
+      loader.on("world", function() { svg.selectAll("path").attr("d", path); }); 
+      
+      var drag = d3.behavior.drag()
+        .on("drag", function() {
+          angle = rotate(projection.rotate());
+          projection.rotate(angle.rotate);
+          svg.selectAll("path").attr("d", path);
+          /*
+svg.each(function(d) { 
+            console.log(d)
+            d3.select(this).selectAll("path").attr("d", d.path);
+          });
+*/
+        })
+        
+     drag.origin(function() { return origin(projection.rotate()); });
+
+      svg.selectAll(".foreground").call(drag);
+      svg.selectAll("path.land").call(drag);
+      
+      
+      
+    /* function update() function(rotate) { return rotate[0] = d3.event.x; }, function(rotate) { return {x: rotate[0]}; }); */
+    
+
+    /* create projections to map countries onto sphere and add zooming functions */ 
+    /*
+var projections = []  
     svg.data([ortho, eisen])
         .each(function(projection) {
             var path = d3.geo.path().projection(projection),
                 svg = d3.select("svg").call(drawMap, path, true);
-
+                
+                projections.push(projection);
+                var projections_ = projections.slice();
+*/
+                /*
+console.log(projection);
+                var tester = []
+                tester.push(projection)
+                console.log(tester.slice())
+*/
                 /* make foreground object zoomable */
-                svg.selectAll(".foreground")
-                    .call(d3.geo.zoom().projection(projection)
+                
+                
+                
+                    /*
+.call(d3.geo.zoom().projection(projection)
                         .scaleExtent([projection.scale() * .7, projection.scale() * 10])
+                        //.x(xScale)
                         .on("zoom.redraw", function() {
                             d3.event.sourceEvent.preventDefault();
                             svg.selectAll("path").attr("d", path);
-                            }));
+                        })
+                    );
+*/
       
                 /* make countries zoomable */
-                svg.selectAll("path.land")
-                    .on("mousedown.grab",  function() {
+                
+                    /*
+.on("mousedown.grab",  function() {
                         var point;
                         
                         point = d3.selectAll("svg").append("path")
@@ -349,21 +404,41 @@ background-color: red;
                         point.remove();
                             });
                         })
+/*            
                     .call(d3.geo.zoom().projection(projection)
                         .scaleExtent([projection.scale() * .7, projection.scale() * 10])
+                        //.x(xScale)
                         .on("zoom.redraw", function() {
                                 d3.event.sourceEvent.preventDefault();
                                 svg.selectAll("path").attr("d", path);
                             }));
+*/
 
+/*
                 loader.on("world", function() { svg.selectAll("path").attr("d", path); });  
 
+
+                var drag = d3.behavior.drag()
+                  .on("drag", function() {
+                    for (var i = 0; i < projections_.length; ++i) {
+            var projection = projections_[i],
+                angle = rotate(projection.rotate());
+            projection.rotate(angle.rotate);
+          }
+                  });
+                
+                if (origin) drag.origin(function() { return origin(projection.rotate()); });
+                svg.selectAll(".foreground").call(drag);
+                svg.selectAll("path.land").call(drag);
+        
     });
+*/
       
+              
     loader.world();
     });
 
-    svg.selectAll("path").attr("x", 2000);
+    svg.selectAll("path").attr("x", 1000);
 
     /* adds sphere overlayer to globe for interactions */
     function drawMap(svg, path, mousePoint) {
