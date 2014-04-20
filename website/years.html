@@ -108,6 +108,7 @@ body {
 
 	<div class="container-fluid">
 	    <div class="col-sm-5 col-sml-offset-1 col-md-4 col-md-offset-1 sidebar panel">
+	      <a href="#" id="getYear">Year</a>
 	    	<div class="panel-heading" id="info">
 	    		<h3>Global Renaissance</h3>
 	    	</div>
@@ -124,7 +125,8 @@ body {
 <script src="js/topojson.min.js"></script>
 <script src="js/d3.geo.zoom.js"></script>
 <script>
-
+jQuery(document).ready(function ()
+{
 
 var degrees = 180 / Math.PI,
    	width = 1700,
@@ -160,7 +162,7 @@ d3.json("maps_110.json", function(error, world) {
      .enter().append("path")
 		.attr("class", "land")
 		.attr("data-country", function(d) { return d.properties.name;})	
-		.on("click", function (d) { updateViz(d.properties.name);
+		.on("click", function (d) { curCountry = d.properties.name; updateViz(d.properties.name);
 									d3.geo.zoom(this); } )
 		.on("mouseover", function() {d3.select(this).classed("active", true);})
 		.on("mouseout", function() {d3.select(this).classed("active", false);}); 
@@ -266,8 +268,9 @@ var margin = { top: 85, right: 20, bottom: 50, left: 100 },
       }
 */
 
+var curCountry;
 
-function showCountryData(countryName)
+function getYearCountryData(countryName)
 {
 	  //var link  = '/renaissance/custom?qry='+encodeURIComponent(countryName.toLowerCase());
 	 
@@ -373,7 +376,7 @@ var countries_loaded = [];
 function updateViz (countryName) {
  document.getElementById('info').innerHTML = "showing visualization for " + countryName;
   document.getElementById('countryDataViz-1').innerHTML = "";
-    showCountryData(countryName);
+    getYearCountryData(countryName);
 }
 /* generate orthographic projection */
 function orthographicProjection(width, height) {
@@ -386,5 +389,13 @@ function orthographicProjection(width, height) {
       .rotate([0, -30]);
 }
 
+$('#getYear').click(function ()
+{
+  document.getElementById('info').innerHTML = "showing visualization for " + curCountry;
+  document.getElementById('countryDataViz-1').innerHTML = "";
+  getYearCountryData(curCountry);
+});
+  
+});
 </script>
 </body>
