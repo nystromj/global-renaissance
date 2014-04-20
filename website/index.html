@@ -660,21 +660,26 @@ console.log(projection);
                 .attr("transform", "translate(-6," + gridSize / 1.5 + ")")
                 .attr("class", function (d, i) { return ((i >= 0 && i <= 4) ? "dayLabel mono axis axis-workweek" : "dayLabel mono axis"); });
 
+          function toTitleCase(str)
+{
+    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+}
+
           var typelabels = svg.selectAll(".typeLabel")
               //.data(d3.set(data, function(d) { return d.collection; }))
               .data(types)
               .enter().append("text")
-                .text(
-                
-                function (d, i) { 
-                  console.log(d);
-                  if (d == 'europe') {
-                    return 'Europe'
-                  } 
-                  else if (d == 'asia') {
-                    return 'Asia'
+                .text(function (d, i) { 
+                  if (d == 'corpus') {
+                    return 'EEBO'
                   }
-                  return labels[i]; })
+                  else if (d == 'country') {
+                    return countryName
+                  }
+                  else {
+                    return toTitleCase(d.replace('_', ' '));
+                  }                  
+                })
                 .attr("transform", function(d, i) { 
                   return "translate(" + ( i * gridSize) + ",0)"
                     + "translate(" + gridSize / 2 + ", -6)rotate(-65)";
@@ -824,7 +829,8 @@ data.forEach(function(d) { if (years.indexOf(d.year) === -1) years.push(d.year)}
 
           heatMap.append("title").text(function(d) { return d.freq; });
               
-          var legend = svg.selectAll(".legend")
+          /*
+var legend = svg.selectAll(".legend")
               .data([0].concat(colorScale.quantiles()), function(d) { return d; })
               .enter().append("g")
               .attr("class", "legend");
@@ -841,6 +847,7 @@ data.forEach(function(d) { if (years.indexOf(d.year) === -1) years.push(d.year)}
             .text(function(d, i) { if (i % 2 === 0) return "≥" + Math.round(d); })
             .attr("x", function(d, i) { return (legendElementWidth * i)-margin.left; })
             .attr("y", height+margin.bottom-15);
+*/
       });
 
 
