@@ -687,7 +687,8 @@ console.log(projection);
 
           heatMap.append("title").text(function(d) { return d.value; });
               
-          var legend = svg.selectAll(".legend")
+          /*
+var legend = svg.selectAll(".legend")
               .data([0].concat(colorScale.quantiles()), function(d) { return d; })
               .enter().append("g")
               .attr("class", "legend");
@@ -704,6 +705,7 @@ console.log(projection);
             .text(function(d, i) { if (i % 2 === 0) return "≥" + Math.round(d); })
             .attr("x", function(d, i) { return (legendElementWidth * i)-margin.left; })
             .attr("y", height+margin.bottom-15);
+*/
       });
 
 
