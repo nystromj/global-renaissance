@@ -13,6 +13,8 @@
 <script src="js/draggable.js"></script>
 <script src="js/mapDrag.js"></script>
 <script src="js/mapZoom.min.js"></script>
+
+<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 <script type="text/javascript">
 jQuery(document).ready(function ($) {
   //console.log("hi");
@@ -23,7 +25,7 @@ jQuery(document).ready(function ($) {
   
   var lastScrollTop = 0;
   var zoom = 0.4;
-  var zoomFactor = 0.02;
+  var zoomFactor = 0.01;
   var transformScale;
   
   //$('#mapRenWrapper').wheelzoom();
@@ -207,6 +209,7 @@ jQuery(document).ready(function ($) {
     {
 	    /*display:none;*/
 	    background-color: white;
+	    display: none;
     }
     
     footer .navbar
@@ -267,10 +270,17 @@ background-color: red;
 	    border-radius: 100%;
 */
     }
+    .location-place
+    {
+      width: 16px;
+      height: 16px;
+      background-image: url('/img/facebook_places.png');
+      display: inline-block;
+    }
     .location span
     {
-	    font-size: 52px;
-	    color: red;
+	    font-size: 60px;
+	    color: white;
     }
     .doc-wrapper
     {
@@ -309,17 +319,23 @@ background-color: red;
 		
 		var locations = {
         	// Country Name : [top position, right position]
-	      "China" : [340, 230],
-	      "England" : [300, 410],
-	      "France" : [320, 400],
-	      "America" : [380, 870]
+	      "China" : [1040, 530],
+	      "England" : [800, 1280],
+	      "France" : [880, 1300],
+	      "America" : [1000, 2500],
+	      "India": [1200, 720],
+	      "Spain": [940, 1360],
+	      "Korea": [920, 460],
+	      "Egypt": [1150, 1090],
+	      "Japan": [940, 320],
+	      "Portugal": [910, 1390]
         };
         
         var loc;
 		$.each(locations, function (key, value)
 		{
 			loc = document.createElement('a');
-			$(loc).append('<span class="glyphicon glyphicon-pushpin"></span> ');
+			$(loc).append('<span class="fa fa-map-marker"></span> ');
 			$(loc).attr('href', '#');
 			$(loc).attr('data-country', key);
 			loc.className = 'location';
@@ -331,6 +347,13 @@ background-color: red;
 			addListener(self);
 		});
 		
+		$('#renMap').click(function (e)
+		{
+		  console.log(e.target);
+		   if (!$(e.target).is('.location, .location span')) {
+  		  $('.panel').fadeOut('fast');
+  		}
+		});
 		function addListener(self)
 		{
 			$(self).click(function (e)
@@ -338,6 +361,7 @@ background-color: red;
 				e.preventDefault();
 				console.log("Updating viz");
 				updateViz($(self).attr('data-country'));
+				$('.panel').show();
 			});
 		}
     });
