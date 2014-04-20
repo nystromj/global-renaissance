@@ -11,10 +11,95 @@
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js" type="text/javascript">
 </script>
 <script src="js/draggable.js"></script>
+<script src="js/mapDrag.js"></script>
+<script src="js/mapZoom.min.js"></script>
+<script type="text/javascript">
+jQuery(document).ready(function ($) {
+  //console.log("hi");
+		//renMapWrapper
+  $('#renMapWrapper').kinetic({
+    slowdown: 0.8
+  });
+  
+  var lastScrollTop = 0;
+  var zoom = 0.4;
+  var zoomFactor = 0.02;
+  var transformScale;
+  
+  //$('#mapRenWrapper').wheelzoom();
+  
+
+  var origin;
+  var currentMousePos = { x: 0, y: 0 };
+  var windowWidth = $(window).width(); //retrieve current window width
+  console.log("width: " + windowWidth);
+  var windowHeight = $(window).height(); //retrieve current window height
+  var constScaleX = windowWidth/2;
+  var constScaleY = windowHeight/2;
+  var constScale = constScaleX + "px" + " " + constScaleY + "px";
+  
+  zoomMap();
+  function zoomMap()
+  {
+    origin = currentMousePos.x + "px " + currentMousePos.y + "px";
+    //console.log ("origin: " + origin);
+    transformScale = "scale(" + zoom + ")";
+    var sc = currentMousePos.x;
+    $('#renMap').css({
+      "-webkit-transform": transformScale, 
+      '-o-transform' : transformScale, 
+      '-moz-transform' : transformScale,
+      '-ms-zoom' : zoom,
+/*
+      'transform-origin': "1500px 500px",
+      '-webkit-transform-origin:': "1500px 500px"
+*/
+    });
+    currentMousePos = { x: 1500, y: 500 };
+  }
+
+  
+/*
+  $(document).mousemove(function(event) {
+      currentMousePos.x = event.pageX;
+      currentMousePos.y = event.pageY;
+  });
+*/
+  
+  
+  var st = $(this).scrollTop();
+  
+  $(window).scroll(function(event){
+    event.preventDefault();
+    console.log(event);
+     var stN = $(this).scrollTop();
+     console.log(zoom);
+     if (st > lastScrollTop){
+         // downscroll code
+         if (zoom > 0.37){
+          zoom -= zoomFactor;
+         }
+     } 
+     else 
+     {
+        // upscroll code
+        if (zoom < 0.8){
+          zoom += zoomFactor;
+        }
+     }
+     lastScrollTop = stN;
+     //$('#renMap').animate({ 'zoom': zoom });
+     zoomMap();
+  });
+
+
+
+});
+</script>
     <style type="text/css">
-body {
-    margin: 0;
-    padding: 0;
+    body {
+      margin: 0;
+      padding: 0;
     }
 	
     /*
@@ -134,33 +219,41 @@ body {
     {
 	    margin:0;
 	    padding:0;
+	    /* overflow: hidden; */
     }
     
      #renMap
     {
-	    background-image: url('img/renMap.png');
+	      background-image: url('img/renMap.png');
         background-repeat: no-repeat;
-        background-position: right left;
-        width: 3000px;
-        height:2000px;
-       -ms-zoom: 0.8;
-       -moz-transform: scale(0.8); 
+        background-position: right top;
+        width: 3400px;
+        height: 2500px;
+       -ms-zoom: 0.4;
+       -moz-transform: scale(0.4); 
        -moz-transform-origin: 0px 0; 
-       -o-transform: scale(0.8); 
+       -o-transform: scale(0.4); 
        -o-transform-origin: 0 0;
-       -webkit-transform: scale(0.8); 
+       -webkit-transform: scale(0.4); 
        -webkit-transform-origin: 0 0;
-        
+       position: absolute;
+       /*
+left:-960px;
+       top: -500px;
+*/
     }
     
     #renMapWrapper
     {
-        display: none;
+      display: none;
 	    position:absolute;
 	    top:0;
+	    left:0;
 	    width: 100%;
 	    height: 100%;
-	    overflow: scroll;
+	    max-width: 1300px;
+      overflow: hidden;
+      
     }
     .location
     {
@@ -177,6 +270,14 @@ background-color: red;
     {
 	    font-size: 52px;
 	    color: red;
+    }
+    .doc-wrapper
+    {
+      position: relative;
+      max-width: 1300px;
+      height: 100%;
+      min-height: 500px;
+      overflow: hidden;
     }
     </style>
     <script type="text/javascript">
@@ -243,6 +344,7 @@ background-color: red;
 </head>
 
 <body>
+
     <div class="container-fluid">
         <div class="switch-controls pull-right">
             <a href="#" class="switch-map btn btn-default" id="modernMapControl"><span class="mapSelected glyphicon glyphicon-globe"></span> Modern Map</a> <a href="#" class="switch-map btn btn-default" id="renMapControl"><span class="mapSelected"></span> Renaissance Era Map</a>
@@ -256,7 +358,7 @@ background-color: red;
 
             <div class="panel-body">
                 <div id="countryDataViz-1"></div>
-                <p class="legend">Figure. The relative word frequencies among the country, continent...</p>
+                <p class="legend"></p>
             </div><!-- .panel-body -->
         </div><!-- .sidebar -->
     </div><!-- .container-fluid -->
@@ -611,6 +713,7 @@ console.log(projection);
             </div>
         </nav>
     </footer><!-- /.container-fluid -->
-    
+    <div class="clearfix"></div>
+
 </body>
 </html>
