@@ -37,18 +37,20 @@ jQuery(document).ready(function ($) {
   var constScaleX = windowWidth/2;
   var constScaleY = windowHeight/2;
   var constScale = constScaleX + "px" + " " + constScaleY + "px";
-  
+  var mozScale;
   zoomMap();
   function zoomMap()
   {
     origin = currentMousePos.x + "px " + currentMousePos.y + "px";
     //console.log ("origin: " + origin);
     transformScale = "scale(" + zoom + ")";
+    mozScale = "scale(" + zoom + ", " + zoom + ")";
+    console.log(mozScale);
     var sc = currentMousePos.x;
     $('#renMap').css({
       "-webkit-transform": transformScale, 
       '-o-transform' : transformScale, 
-      '-moz-transform' : transformScale,
+      '-moz-transform' : mozScale,
       '-ms-zoom' : zoom,
 /*
       'transform-origin': "1500px 500px",
@@ -71,7 +73,6 @@ jQuery(document).ready(function ($) {
   
   $(window).scroll(function(event){
     event.preventDefault();
-    console.log(event);
      var stN = $(this).scrollTop();
      console.log(zoom);
      if (st > lastScrollTop){
@@ -292,80 +293,7 @@ background-color: red;
       overflow: hidden;
     }
     </style>
-    <script type="text/javascript">
-// For switching between maps
-    jQuery(document).ready(function ($)
-    {
-        $('.switch-map').click(function (e)
-        {
-            e.preventDefault();
-           $('.mapSelected').removeClass('glyphicon glyphicon-globe');
-           $(this).find('.mapSelected').addClass('glyphicon glyphicon-globe');
-           
-           if ($(this).attr('id') == 'renMapControl')
-           {
-	           $('#map').hide();
-	           $('#renMapWrapper').show();
-           }
-           else
-           {
-	           $('#renMapWrapper').hide();
-	           $('#map').show();
-           }
-        });
-        
-        		
-		var elem = document.querySelector('.panel');
-		var draggie = new Draggabilly( elem, {});
-		
-		var locations = {
-        	// Country Name : [top position, right position]
-	      "China" : [1040, 530],
-	      "England" : [800, 1280],
-	      "France" : [880, 1300],
-	      "America" : [1000, 2500],
-	      "India": [1200, 720],
-	      "Spain": [940, 1360],
-	      "Korea": [920, 460],
-	      "Egypt": [1150, 1090],
-	      "Japan": [940, 320],
-	      "Portugal": [910, 1390]
-        };
-        
-        var loc;
-		$.each(locations, function (key, value)
-		{
-			loc = document.createElement('a');
-			$(loc).append('<span class="fa fa-map-marker"></span> ');
-			$(loc).attr('href', '#');
-			$(loc).attr('data-country', key);
-			loc.className = 'location';
-			document.getElementById('renMap').appendChild(loc);
-			$(loc).css( { 'top': value[0] + "px", 'right': value[1] + "px"});
-			//$(loc).text(key);
-			//console.log("Added, right: " + value[1] + "px");
-			var self = loc;
-			addListener(self);
-		});
-		
-		$('#renMap').click(function (e)
-		{
-		  console.log(e.target);
-		   if (!$(e.target).is('.location, .location span')) {
-  		  $('.panel').fadeOut('fast');
-  		}
-		});
-		function addListener(self)
-		{
-			$(self).click(function (e)
-			{
-				e.preventDefault();
-				console.log("Updating viz");
-				updateViz($(self).attr('data-country'));
-			});
-		}
-    });
-    </script>
+
 </head>
 
 <body>
@@ -832,9 +760,6 @@ data.forEach(function(d) { if (years.indexOf(d.year) === -1) years.push(d.year)}
             .attr("y", height+margin.bottom-15);
       });
 
-
-    
-
 	//$document.getElementById('countryDataViz-1').innerHTML = makeCountryViz(countryName);
 }
 
@@ -854,6 +779,78 @@ $('#getCorpus').click(function (e)
   e.preventDefault();
   updateViz (curCountry);
 });
+
+
+
+       $('.switch-map').click(function (e)
+        {
+            e.preventDefault();
+           $('.mapSelected').removeClass('glyphicon glyphicon-globe');
+           $(this).find('.mapSelected').addClass('glyphicon glyphicon-globe');
+           
+           if ($(this).attr('id') == 'renMapControl')
+           {
+	           $('#map').hide();
+	           $('#renMapWrapper').show();
+           }
+           else
+           {
+	           $('#renMapWrapper').hide();
+	           $('#map').show();
+           }
+        });
+        
+        		
+		var elem = document.querySelector('.panel');
+		var draggie = new Draggabilly( elem, {});
+		
+		var locations = {
+        	// Country Name : [top position, right position]
+	      "China" : [1040, 530],
+	      "England" : [800, 1280],
+	      "France" : [880, 1300],
+	      "America" : [1000, 2500],
+	      "India": [1200, 720],
+	      "Spain": [940, 1360],
+	      "Korea": [920, 460],
+	      "Egypt": [1150, 1090],
+	      "Japan": [940, 320],
+	      "Portugal": [910, 1390]
+        };
+        
+        var loc;
+		$.each(locations, function (key, value)
+		{
+			loc = document.createElement('a');
+			$(loc).append('<span class="fa fa-map-marker"></span> ');
+			$(loc).attr('href', '#');
+			$(loc).attr('data-country', key);
+			loc.className = 'location';
+			document.getElementById('renMap').appendChild(loc);
+			$(loc).css( { 'top': value[0] + "px", 'right': value[1] + "px"});
+			//$(loc).text(key);
+			//console.log("Added, right: " + value[1] + "px");
+			var self = loc;
+			addListener(self);
+		});
+		
+		$('#renMap').click(function (e)
+		{
+		  console.log(e.target);
+		   if (!$(e.target).is('.location, .location span')) {
+  		  $('.panel').fadeOut('fast');
+  		}
+		});
+		function addListener(self)
+		{
+			$(self).click(function (e)
+			{
+				e.preventDefault();
+				console.log("Updating viz");
+				curCountry = $(self).attr('data-country');
+				updateViz($(self).attr('data-country'));
+			});
+		}
 
 });
     </script>
