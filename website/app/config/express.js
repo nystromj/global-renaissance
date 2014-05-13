@@ -1,7 +1,5 @@
 // Fields
 var express = require("express");
-var session = require("express-session");
-var mongoStore = require("connect-mongo")({session:session});
 var helpers = require("view-helpers");
 var package = require("../../package.json");
 var path = require("path");
@@ -20,8 +18,8 @@ module.exports = function (app, config)
     }));
 
     // Favicon
-    app.use(require("static-favicon")());
-    app.use(express.static(config.root + "public"));
+
+    app.use(express.static(config.root + "../../public"));
 
     // Set views
     app.set('views', path.join(__dirname, '../views'));
