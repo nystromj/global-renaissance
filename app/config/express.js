@@ -18,8 +18,8 @@ module.exports = function (app, config)
     }));
 
     // Favicon
-    app.use(require("static-favicon")());
-    app.use(express.static(config.root + "public"));
+
+    app.use(express.static(config.root + "../../public"));
 
     // Set views
     app.set('views', path.join(__dirname, '../views'));
