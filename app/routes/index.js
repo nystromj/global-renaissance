@@ -11,4 +11,9 @@ router.get('/map', function(req, res) {
   res.render('map/map', { title: 'Map' });
 });
 
+/* GET home page. */
+router.get('/lda', function(req, res) {
+  res.render('lda/lda');
+});
+
 module.exports = router;

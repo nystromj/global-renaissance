@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<html>
+<head>
+  <!--<link rel="stylesheet" type="text/css" href="lda.css">-->
+  <title>LDA Interactive Viz</title>
+  <style type="text/css">
+			  div .tab-content {
+			overflow:hidden;
+		}
+
+		/*
+		http://bl.ocks.org/mbostock/1212215
+		*/
+
+		.points:not(:hover) .docsize {
+			display: none;
+		}
+
+		/*
+		  http://alignedleft.com/tutorials/d3/axes/
+		  .axis path,
+		  .axis line {
+		  stroke: black;
+		  shape-rendering: crispEdges;
+		  }
+		*/
+
+		text {
+			font-family: sans-serif;
+			font-size: 11px;
+		}
+
+		.axis {
+			shape-rendering: crispEdges;
+		}
+
+		/*
+		  this is the major grid line
+		  .x.axis line {
+		  stroke: lightgrey;
+		  }
+		*/
+
+		.xaxis .tick.major {
+			fill: black;
+			stroke: black;
+			stroke-width: 0.1;
+			opacity: 0.7;
+		}
+
+		.xaxis .tick.minor {
+			display: none;
+		}
+
+		.xaxis path {
+			display: none;
+		}
+	 
+	 </style>
+</head>
+
+<body>
+
+<script src="http://d3js.org/d3.v3.js"></script>
+
+<script src="js/ldaviz-lambdatransition.js"></script>
+
+<!--div to enter a value to select a specific topic-->
+<div id="countryentry" style="float:left; margin-left: 3px; padding-bottom: 10px; font: 14px sans-serf; background-color: white">
+	<form name="countryForm">
+		<select name="jumpmenu" onChange="makeViz(document.countryForm.jumpmenu.options[document.countryForm.jumpmenu.options.selectedIndex].value)">
+			<option> Select a Country </option>
+			<option value="America">America</option>
+			<option value="China">China</option>
+			<option value="Egypt">Egypt</option>
+			<option value="England">England</option>
+			<option value="France">France</option>
+			<option value="India">India</option>
+			<option value="Japan">Japan</option>
+			<option value="Portugal">Portugal</option>
+			<option value="Spain">Spain</option>
+			<option value="Turkey">Turkey</option>
+		</select>
+	</form>
+</div>
+<div id="topicentry" style="float: left; margin-left: 30px; padding-bottom: 10px; font: 14px sans-serif; background-color:white">
+<form onSubmit="return change_topic()">
+Selected Topic: 
+<input type="text" id="topic" size="25">
+<input type="submit" value="Submit">
+<a href="#" id="decrease_topic"> Previous Topic </a>
+&nbsp
+<a href="#" id="increase_topic"> Next Topic </a>
+</form>
+</div>
+
+<!--Div to input value of lambda using text box-->
+<div id="lambdaentry" style="float: left; margin-left: 30px; padding-bottom: 10px; font: 14px sans-serif; background-color:white">
+<form onSubmit="return change_lambda()">
+Lambda = 
+<input type="text" id="lambda" size="25">
+<input type="submit" value="Submit">
+<a href="#" id="decrease_lambda"> Lambda - 0.1 </a>
+&nbsp
+<a href="#" id="increase_lambda"> Lambda + 0.1 </a>
+</form>
+</div>
+
+
+<div id="errorMsg"></div>
+
+<div id="lda" style="clear: left; background-color: white"></div>
+
+</body>
+
+</html>
