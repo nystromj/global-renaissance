@@ -520,7 +520,7 @@ function text_off() {
 
 // The actual read-in of the data and main code:
 function makeViz (countryName) {
-	d3.json("data/ldaData/lda"+ countryName + ".json", function(error, data) {
+	d3.json("data/global-renaissance-lda/"+ countryName + ".json", function(error, data) {
 
 		// set the number of topics to global variable k:
 		K = data['mdsDat'].x.length;

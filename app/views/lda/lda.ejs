@@ -67,9 +67,8 @@
 <script src="js/ldaviz-lambdatransition.js"></script>
 
 <!--div to enter a value to select a specific topic-->
-<div id="countryentry" style="float:left; margin-left: 3px; padding-bottom: 10px; font: 14px sans-serf; background-color: white">
+<div id="countryentry" style="float:left; margin-left: 3px; padding-bottom: 10px; font: 14px sans-serif; background-color: white">
 	<form name="countryForm">
-		Selected Country:
 		<select name="jumpmenu" onChange="jumpTo(document.countryForm.jumpmenu.options[document.countryForm.jumpmenu.options.selectedIndex].value)">
 			<option> Select a Country </option>
 			<option value="America">America</option>
@@ -99,7 +98,7 @@ Selected Topic:
 <!--Div to input value of lambda using text box-->
 <div id="lambdaentry" style="float: left; margin-left: 30px; padding-bottom: 10px; font: 14px sans-serif; background-color:white">
 <form onSubmit="return change_lambda()">
-Lambda = 
+Lambda: 
 <input type="text" id="lambda" size="25">
 <input type="submit" value="Submit">
 <a href="#" id="decrease_lambda"> Lambda - 0.1 </a>

@@ -20,7 +20,7 @@
 11 error There is likely additional logging output above.
 12 error System Darwin 13.1.0
 13 error command "node" "/usr/local/bin/npm" "start"
-14 error cwd /Users/Nelle/Documents/coding/text_analysis/global-renaissance/website
+14 error cwd /Users/Nelle/Documents/coding/text_analysis/globalrenaissanceweb
 15 error node -v v0.10.26
 16 error npm -v 1.4.6
 17 error code ELIFECYCLE
