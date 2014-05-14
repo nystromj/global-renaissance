@@ -727,7 +727,6 @@ function makeViz (countryName) {
 
 	});
 }
-makeViz("America");
 
 // increment topic button/link:
 d3.select("#increase_topic").on("click", function() {

@@ -13,7 +13,8 @@ router.get('/map', function(req, res) {
 
 /* GET home page. */
 router.get('/lda', function(req, res) {
-  res.render('lda/lda');
+	var country = req.query.country ? req.query.country + "" : "America";
+	res.render('lda/lda', { country: country });
 });
 
 module.exports = router;

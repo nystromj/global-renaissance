@@ -69,7 +69,8 @@
 <!--div to enter a value to select a specific topic-->
 <div id="countryentry" style="float:left; margin-left: 3px; padding-bottom: 10px; font: 14px sans-serf; background-color: white">
 	<form name="countryForm">
-		<select name="jumpmenu" onChange="makeViz(document.countryForm.jumpmenu.options[document.countryForm.jumpmenu.options.selectedIndex].value)">
+		Selected Country:
+		<select name="jumpmenu" onChange="jumpTo(document.countryForm.jumpmenu.options[document.countryForm.jumpmenu.options.selectedIndex].value)">
 			<option> Select a Country </option>
 			<option value="America">America</option>
 			<option value="China">China</option>
@@ -111,6 +112,15 @@ Lambda =
 <div id="errorMsg"></div>
 
 <div id="lda" style="clear: left; background-color: white"></div>
+	
+	<script>
+		function jumpTo(x){
+			if (document.countryForm.jumpmenu.value != "null") {
+			document.location.href = "/lda?country=" + x;
+			}
+		}
+		makeViz("<%= country %>");
+	</script>
 
 </body>
 
