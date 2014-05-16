@@ -513,66 +513,6 @@
                                 .css("marginTop", curMarginTop - 10);
 
 
-<<<<<<< HEAD
-=======
-                    d3.json("data/global-renaissance-map/" + countryName + ".json", function(error, data) {
-
-                        function makeBarGraph(entries, selection, accessor, text) {
-                            var x = d3.scale.linear()
-                                .domain([0, d3.max(entries, function(d) {
-                                    return eval(accessor);
-                                })])
-                                .range([0, width]);
-                            
-                            var chart = selection.append("svg")
-                                .attr("width", width + margin.left + margin.right)
-                                .attr("height", barHeight * entries.length +
-                                    margin.top + margin.bottom)
-                                .append("g")
-                                .attr("transform", "translate(0," + margin.top + ")");
-
-                            var bar = chart.selectAll("g")
-                                .data(entries)
-                                .enter().append("g")
-                                .attr("transform", function(d, i) {
-                                    return "translate(0," + i * barHeight + ")";
-                                });
-
-                            bar.append("rect")
-                                .attr("x", margin.left)
-                                .attr("width", function(d) {
-                                    return x(eval(accessor))
-                                })
-                                .attr("height", barHeight - 1);
-
-                            bar.append("text")
-                                .attr("x", 0)
-                                .attr("y", barHeight / 2)
-                                .attr("dy", ".35em")
-                                .style("fill", "black")
-                                .style("text-anchor", "start")
-                                .text(function(d, i) {
-                                    return d.key;
-                                });
-
-                            bar.append("text")
-                                .attr("x", function(d) {
-                                    return x(eval(accessor)) + margin.left - 3;
-                                })
-                                .attr("y", barHeight / 2)
-                                .attr("dy", ".35em")
-                            //.style("fill", "black")
-                            .text(text);
-                        }
-                        // Clear the popup's current content
-                        var popupContent = document.getElementById('popup-content');
-                        popupContent.innerHTML = '';
-
-                        var chart = d3.select("#popup-content");
-                        var scores = d3.entries(data);
-                        makeBarGraph(scores, chart, "d.value.score", function(d) {
-                            return d.value.score;
->>>>>>> ba9fb524b188d5f24e0dcaf3468e5024319bc57e
                         });
                     });
                     $('.words-scroll-up').click(function(e) {
