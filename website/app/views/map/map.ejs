@@ -1,0 +1,493 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>New Map Thing</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <!-- Styles -->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <!-- Scripts External -->
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://d3js.org/d3.v3.js"></script>
+    <!-- Scripts Local -->
+    <script src="js/jquery.panzoom.min.js"></script>
+    <script src="js/jquery.mousewheel.js"></script>
+    <script src="js/draggable.min.js"></script>
+    <style type="text/css">
+        body {
+            background-color: #333;
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .parent {
+            width: 100%;
+        }
+        #renMap {
+/*            width: 900px;*/
+        }
+        #main-panel {
+            position: relative;
+        }
+        /* Menu Bar */
+        #left-bar {
+            background-color: #333;
+            margin: 0;
+            padding: 0;
+            width: 50px;
+        }
+        #left-bar-menu {
+            margin: 0;
+            padding: 0;
+            position: fixed;
+            top: 0;
+        }
+        #left-bar-menu li {
+            border-bottom: 1px solid #dedede;
+            list-style: none;
+            width: 50px;
+            text-align: center;
+            padding: 8px 0;
+            font-size: 22px
+        }
+        #left-bar-menu li a {
+            text-decoration: none;
+            color: #dedede;
+        }
+        .left-menu-info {
+            position: absolute;
+            left: 70px;
+            background-color: #fff;
+            display: none;
+            color: #efefef;
+            font-size: 16px;
+            padding: 14px 20px;
+            background-color: rgb(118, 194, 187);
+            z-index: 9999;
+        }
+        #left-menu-brand-text {
+            -webkit-transform: rotate(-90deg);
+            -moz-transform: rotate(-90deg);
+            -ms-transform: rotate(-90deg);
+            -o-transform: rotate(-90deg);
+            transform: rotate(-90deg);
+            /* also accepts left, right, top, bottom coordinates; not required, but a good idea for styling */
+            /* Should be unset in IE9+ I think. */
+            filter: progid: DXImageTransform.Microsoft.BasicImage(rotation=3);
+            margin-top: 150px;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        #left-menu-brand {}
+        /* Visualization Style */
+        .chart text,
+         text {
+            fill: white;
+            font: 10px sans-serif;
+            text-anchor: end;
+        }
+        rect {
+            fill: steelblue;
+        }
+        text .label {
+            fill: black;
+            text-align: center;
+        }
+        .info {
+            display: none;   
+        }
+        .year-density {
+            float: left;
+        }
+        /* Data Popups */
+        #popup,
+        #words-popup,
+        #years-popup {
+            background-color: #CED0CD;
+            width: 400px;
+            font-weight: 600;
+            z-index: 99;
+            display: none;
+        }
+        /* Popup Positions */
+        #popup {
+            
+            position: absolute;
+            left: 30px;
+            top: 15px;
+        }
+        #years-popup {
+            position: absolute;
+            z-index: 999;
+            left: 450px;
+            top: 350px;
+        }
+        #words-popup {
+            position: absolute;
+            left: 450px;
+            top: 15px;
+            z-index: 999;
+        }
+        
+        
+        .popup-title,
+        #popup-content,
+        #popup-footer {
+            padding: 5px 10px;
+        }
+/*
+        #popup-content,
+        #popup-footer {
+            color: #5F6463;
+            font-size: 15px;
+        }
+*/
+        #popup-footer {
+            border-top: 1px solid #BFC1BE;
+        }
+        .pop-title {
+            background-color: #1485CC;
+            color: #fff;
+            font-weight: 300;
+            padding: 8px 12px;
+            font-size: 18px;
+            margin-bottom: 10px;
+            cursor: move;
+        }
+        .word {
+            float: right;
+        }
+        .year {
+            float: right;
+        }
+        
+        .popup-content svg {
+            
+        }
+    </style>
+</head>
+
+<body>
+
+    <section id="focal">
+        <div class="parent" style="position:relative">
+            <div class="container-fluid" style="padding:0;">
+                <div class="row-fluid">
+                    <div id="left-menu-info-home" class="left-menu-info">Home</div>
+                    <div id="left-menu-info-book" class="left-menu-info">View Data</div>
+                    <div id="left-bar" class="col-xs-1">
+                        <ul id="left-bar-menu">
+                            <li id="left-menu-brand">
+                                <a href="#" data-item="home" class="left-menu-item">
+                                    <div id="left-menu-brand-text">GlobalRenaissanceProject</div>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="#" data-item="home" class="left-menu-item">
+                                    <span class="glyphicon glyphicon-home"></span>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" data-item="book" class="left-menu-item">
+                                    <span class="glyphicon glyphicon-book"></span>
+                                    </span>
+                                </a>
+                            </li>
+
+
+                        </ul>
+                        <div class="clearfix"></div>
+                    </div>
+
+                    <div id="main-panel" class="" style="padding-left:0;">
+                        <div id="popup">
+                            <div class="pop-title">
+                                <span class="glyphicon glyphicon-globe" style="margin-right:5px"></span>
+                                <span id="pop-title-text"></span>
+                            </div>
+                            <div id="popup-content" class="popup-content">
+                                <p>Here is some content</p>
+                            </div>
+                            <div id="popup-footer">
+                                <p>Click on one of the categories to see individual words</p>
+                            </div>
+                        </div>
+
+                        <div id="words-popup">
+                            <div class="pop-title">Words</div>
+                            <div class="words-content popup-content"></div>
+                        </div>
+
+                        <div id="years-popup">
+                            <div class="pop-title">Years</div>
+                            <div class="years-content popup-content"></div>
+                        </div>
+
+                        <div class="panzoom">
+                            <div id="renMap">
+                                <div class="marker" data-country="Egypt" style="position:absolute; top:365px; left: 600px;">
+                                    <a href="#">
+                                        <img src="/img/mapMarker.png" style="width:28px;height:28px" />
+                                    </a>
+                                </div>
+                                <img id="renImage" src="/img/renMap.png" width="1000">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+
+
+        </div>
+        <script>
+            jQuery(document).ready(function($) {
+                /*
+                 * Get width of window
+                 */
+                var screenWidth = $(window).width();
+               $('#renImage, #main-panel #renMap, .panzoom').css('width', screenWidth - 55);
+                
+                /*
+                 * Popup - draggability, etc.
+                 */
+                var popup = document.getElementById('popup');
+                var draggie = new Draggabilly(popup, {
+                    containment: '#main-panel',
+                    handle: '.pop-title'
+                });
+                // Words popup
+                var popupWords = document.getElementById('words-popup');
+                var draggie = new Draggabilly(popupWords, {
+                    containment: '#main-panel',
+                    handle: '.pop-title'
+                });
+                // Years popup
+                var popupYears = document.getElementById('years-popup');
+                var draggie = new Draggabilly(popupYears, {
+                    containment: '#main-panel',
+                    handle: '.pop-title'
+                });
+
+
+                /*
+                 * Map
+                 */
+                var $section = $('#focal');
+                var $panzoom = $section.find('.panzoom').panzoom();
+                // 
+                //Zoom and play
+                $panzoom.parent().on('mousewheel.focal', function(e) {
+                    e.preventDefault();
+                    var delta = e.delta || e.originalEvent.wheelDelta;
+                    var zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
+                    $panzoom.panzoom('zoom', zoomOut, {
+                        increment: 0.1,
+                        animate: false,
+                        focal: e,
+                        minScale: 1,
+                        maxScale: 5,
+                    });
+                });
+
+                /*
+                 * Left menu bar
+                 */
+                $('a.left-menu-item').mouseover(function() {
+                    var posY = $(this).offset().top;
+                    var item = $(this).attr('data-item');
+                    $('#left-menu-info-' + item)
+                        .css({
+                            'top': posY - 10
+                        })
+                        .show();
+
+
+                    $('#left-menu-info-' + item).animate({
+                        'left': 50
+                    }, 80);
+
+                }).mouseout(function() {
+                    $('.left-menu-info').hide().css('left', 70);
+                });
+
+                /*
+                 * Map markers
+                 */
+                $('.marker').click(function(e) {
+                    e.preventDefault();
+                    var country = $(this).attr('data-country');
+                    console.log(country);
+
+
+                    var posX = $(this).offset().left;
+                    var posY = $(this).offset().top;
+                    $panzoom.panzoom("zoom", 3, {
+                        animate: true
+                    }).panzoom("pan", -posX + 250, -posY + 430, {
+                        relative: true,
+                        animate: true
+                    });
+
+                    // Show the popup
+
+                    makeViz(country);
+
+
+                    $('#popup #pop-title-text').text(country);
+                    $('#popup').show();
+
+                });
+
+
+                var categories = ["race", "measurements",
+                    "culture", "proper-nouns",
+                    "religion", "economics",
+                    "verbs", "geography",
+                    "politics"
+                ];
+
+                var buckets = [1500, 1525, 1550, 1575, 1600, 1625, 1650, 1675, 1700, 1725];
+
+                var margin = {
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: 80
+                },
+                    width = 300,
+                    barHeight = 20;
+
+                function makeViz(countryName) {
+
+                    d3.json("data/global-renaissance-map/" + countryName + ".json", function(error, data) {
+
+                        function makeBarGraph(entries, selection, accessor, text) {
+                            var x = d3.scale.linear()
+                                .domain([0, d3.max(entries, function(d) {
+                                    return eval(accessor);
+                                })])
+                                .range([0, width]);
+                            
+                            var chart = selection.append("svg")
+                                .attr("width", width + margin.left + margin.right)
+                                .attr("height", barHeight * entries.length +
+                                    margin.top + margin.bottom)
+                                .append("g")
+                                .attr("transform", "translate(0," + margin.top + ")");
+
+                            var bar = chart.selectAll("g")
+                                .data(entries)
+                                .enter().append("g")
+                                .attr("transform", function(d, i) {
+                                    return "translate(0," + i * barHeight + ")";
+                                });
+
+                            bar.append("rect")
+                                .attr("x", margin.left)
+                                .attr("width", function(d) {
+                                    return x(eval(accessor))
+                                })
+                                .attr("height", barHeight - 1);
+
+                            bar.append("text")
+                                .attr("x", 0)
+                                .attr("y", barHeight / 2)
+                                .attr("dy", ".35em")
+                                .style("fill", "black")
+                                .style("text-anchor", "start")
+                                .text(function(d, i) {
+                                    return d.key;
+                                });
+
+                            bar.append("text")
+                                .attr("x", function(d) {
+                                    return x(eval(accessor)) + margin.left - 3;
+                                })
+                                .attr("y", barHeight / 2)
+                                .attr("dy", ".35em")
+                            //.style("fill", "black")
+                            .text(text);
+                        }
+                        // Clear the popup's current content
+                        var popupContent = document.getElementById('popup-content');
+                        popupContent.innerHTML = '';
+
+                        var chart = d3.select("#popup-content");
+                        var scores = d3.entries(data);
+                        makeBarGraph(scores, chart, "d.value.score", function(d) {
+                            return d.value.score;
+                        });
+                        // append graphs for each category, to be hidden in divs
+                        for (var key in data) {
+                            // Add action listener
+                            chart.selectAll("g").on("click", function(d, i) {
+                                if (d !== undefined) { // why would d be undefined?
+                                    showWords(d.key.replace(" ", "-"));
+                                } // if
+                                // Show the popups
+                                $('#words-popup').show();
+                                $('#years-popup').show();
+                            }); // .selectAll
+
+                            // Append Words
+                            var wordsContent = d3.select(".words-content");
+                            var listGraph = wordsContent.append("div")
+                                .attr("class", "info " +
+                                    key.replace(" ", "-") + " word");
+                            // grab the entries in the list
+                            var entries = d3.entries(data[key].list);
+                            makeBarGraph(entries, listGraph, "d.value", function(d) {
+                                return d.value;
+                            });
+
+
+                            // Gather year data into buckets
+                            var newData = {};
+                            for (var index in buckets) {
+                                bucket = "" + buckets[index];
+                                newData[bucket] = data[key].years[bucket];
+                            } // for
+
+                            // Append Years
+                            var yearsContent = d3.select(".years-content");
+                            var yearGraph = yearsContent.append("div")
+                                .attr("class", "info " +
+                                    key.replace(" ", "-") + " year");
+                            // get year entries
+                            var years = d3.entries(newData);
+                            makeBarGraph(years, yearGraph, "d.value", function(d) {
+                                return (d.value / data[key].years['total'] * 100).toFixed(2);
+                            });
+                        } // for
+                    });
+                } // makeViz ()
+
+                var getNext = function(elm, arr) {
+                    var current = arr.indexOf(elm);
+                    if (current == arr.length - 1) {
+                        return arr[0];
+                    } else return arr[current + 1];
+                }
+
+                var getPrev = function(elm, arr) {
+                    var current = arr.indexOf(elm);
+                    console.log(current);
+                    if (current == 0) {
+                        return arr[arr.length - 1];
+                    } else return arr[current - 1];
+                }
+
+                var showWords = function(cat) {
+                    d3.selectAll(".info").style("display", "none");
+                    d3.selectAll("." + cat).style("display", "block");
+                } //showWords()
+            });
+        </script>
+    </section>
+</body>
+
+</html>
